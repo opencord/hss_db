@@ -12,16 +12,22 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-- hosts: {{ instance_name }}
-  gather_facts: False
-  connection: ssh
-  remote_user: ubuntu
-  become: yes
-  become_user: root
-  become_method: sudo
-  vars:
-    - config_file_path: /etc/cassandra
-    - db_ip: {{ db_ip }}
-  roles:
-    - setup_cassandra_db
+---
 
+- name: resolve sudo timeout
+  become: yes
+  shell: "echo 127.0.1.1       $(cat /etc/hostname) >> /etc/hosts"
+
+- name: stop cassandra DB first
+  become: yes
+  shell: "service cassandra stop"
+
+- name: make cassandra config file
+  become: yes
+  template:
+    src=cassandra.yaml.j2
+    dest="{{ config_file_path }}/cassandra.yaml" owner=root group=root mode=755
+
+- name: start cassandra DB again
+  become: yes
+  shell: "service cassandra start"
