@@ -18,6 +18,7 @@ from synchronizers.new_base.exceptions import *
 
 class HSSDBServiceInstancePolicy(TenantWithContainerPolicy):
     model_name = "HSSDBServiceInstance"
+    constrain_by_service_instance = True
 
     def handle_create(self, service_instance):
         return self.handle_update(service_instance)
@@ -66,10 +67,13 @@ class HSSDBServiceInstancePolicy(TenantWithContainerPolicy):
 
         desired_image = self.get_image(service_instance)
         desired_flavor = self.get_flavor(service_instance)
+        node_label = service_instance.node_label
+        constrain_by_service_instance = self.constrain_by_service_instance
 
         slice = service_instance.owner.slices.first()
 
-        (node, parent) = LeastLoadedNodeScheduler(slice, label=None).pick()
+        scheduler = LeastLoadedNodeScheduler(slice, label=node_label, constrain_by_service_instance=constrain_by_service_instance)
+        (node, parent) = scheduler.pick()
 
         assert (slice is not None)
         assert (node is not None)
