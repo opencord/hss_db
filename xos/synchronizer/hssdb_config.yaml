@@ -12,11 +12,16 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-name: hssdb-synchronizer
+name: hssdb
 accessor:
   username: xosadmin@opencord.org
   password: "@/opt/xos/services/hssdb/credentials/xosadmin@opencord.org"
+required_models:
+  - HSSDBService
+  - HSSDBVendor
+  - HSSDBServiceInstance
 dependency_graph: "/opt/xos/synchronizers/hssdb/model-deps"
 steps_dir: "/opt/xos/synchronizers/hssdb/steps"
 sys_dir: "/opt/xos/synchronizers/hssdb/sys"
+models_dir: "/opt/xos/synchronizers/hssdb/models"
 model_policies_dir: "/opt/xos/synchronizers/hssdb/model_policies"
